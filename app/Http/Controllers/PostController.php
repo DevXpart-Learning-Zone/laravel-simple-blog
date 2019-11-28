@@ -3,25 +3,46 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Post;
+use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
     public function index()
     {
         $data = array(
-            'posts' => array(
-                ['title' => 'Post 1', 'body' => 'This is the first post'],
-                ['title' => 'Post 2', 'body' => 'This is the second post'],
-                ['title' => 'Post 3', 'body' => 'This is the third post'],
-                ['title' => 'Post 4', 'body' => 'This is the fourth post'],
-            )
+            'posts' => Post::all()
         );
 
         return view('post.index', $data);
     }
 
+    public function show($post)
+    {
+        $data = array(
+            'post' => Post::findOrFail($post)
+        );
+        return view('post.show', $data);
+    }
+
     public function create()
     {
-        return 'Create a post';
+        return view('post.create');
+    }
+
+    public function store(Request $request)
+    {
+        $post = array(
+            'title' => $request->title,
+            'body' => $request->body,
+            'status' => $request->status
+        );
+
+        if (Post::create($post)) {
+            echo 'Post Created';
+        } else {
+            echo 'Something Wrong';
+        }
+        return redirect('/posts');
     }
 }
